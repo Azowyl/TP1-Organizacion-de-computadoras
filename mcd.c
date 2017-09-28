@@ -1,7 +1,9 @@
-int mcd(int unNum, int otroNum) {
-  if (otroNum == 0) {
-    return unNum;
+#include "mcd.h"
+
+int mcd(int a, int b) {
+  if (b == 0) {
+    return a;
   } else {
-    return mcd(otroNum, unNum % otroNum);
+    return mcd(b, a % b);
   }
 }
