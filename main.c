@@ -11,6 +11,7 @@
 #define VERSION 1.0
 
 extern int mcd(int, int);
+
 extern int mcm(int, int);
 
 void print_info() {
@@ -36,7 +37,7 @@ void print_version() {
 }
 
 void print_out_of_range_error() {
-  fprintf(stderr, "The number is out of range (%d to %li)\n", 2, LONG_MAX);
+  fprintf(stderr, "The number is out of range (%d to %d)\n", 2, INT_MAX);
 }
 
 int main(int argc, char **argv) {
@@ -48,14 +49,14 @@ int main(int argc, char **argv) {
   int argumentsRecievedByGetopt = 0;
 
   static struct option options[] =
-    {
-      {"help",     no_argument,       NULL, 'h'},
-      {"version",  no_argument,       NULL, 'V'},
-      {"output",   required_argument, NULL, 'o'},
-      {"divisor",  no_argument,       NULL, 'd'},
-      {"multiple", no_argument,       NULL, 'm'},
-      {NULL,       no_argument,       NULL, 0}
-    };
+      {
+          {"help",     no_argument,       NULL, 'h'},
+          {"version",  no_argument,       NULL, 'V'},
+          {"output",   required_argument, NULL, 'o'},
+          {"divisor",  no_argument,       NULL, 'd'},
+          {"multiple", no_argument,       NULL, 'm'},
+          {NULL,       no_argument,       NULL, 0}
+      };
 
   while ((argument = getopt_long(argc, argv, "hVo:dm", options, NULL)) != -1) {
     switch (argument) {
@@ -89,22 +90,27 @@ int main(int argc, char **argv) {
     }
   }
   long numbers[2];
+  bool strtolError;
+  bool canFitInInt;
   for (int i = 0; i < 2; i++) {
     numbers[i] = strtol(argv[argumentsRecievedByGetopt + 1 + i], &lastChar, 10);
-    if (errno == ERANGE && (numbers[i] == LONG_MIN || numbers[i] == LONG_MAX)) {
+    strtolError = errno == ERANGE &&
+                  (numbers[i] == LONG_MIN || numbers[i] == LONG_MAX);
+    canFitInInt = numbers[i] >= 2 && numbers[i] <= INT_MAX;
+    if (strtolError || (!canFitInInt)) {
       print_out_of_range_error();
       return ERROR;
     }
   }
 
-  if (returnDivisor){
+  if (returnDivisor) {
     fprintf(output ? output : stdout, "%d\n",
-          mcd((int) numbers[0], (int) numbers[1]));
+            mcd((int) numbers[0], (int) numbers[1]));
   }
 
-  if (returnMultiple){
+  if (returnMultiple) {
     fprintf(output ? output : stdout, "%d\n",
-          mcm((int) numbers[0], (int) numbers[1]));
+            mcm((int) numbers[0], (int) numbers[1]));
   }
 
   if (output) { fclose(output); }
