@@ -5,11 +5,13 @@
 #include <getopt.h>
 #include <errno.h>
 #include <limits.h>
-#include "mcd.h"
 
 #define SUCCESS 0
 #define ERROR 1
 #define VERSION 1.0
+
+extern int mcd(int, int);
+extern int mcm(int, int);
 
 void print_info() {
   printf("%s\n%s\n%s\n%s\n",
@@ -95,8 +97,16 @@ int main(int argc, char **argv) {
     }
   }
 
-  fprintf(output ? output : stdout, "%d\n",
+  if (returnDivisor){
+    fprintf(output ? output : stdout, "%d\n",
           mcd((int) numbers[0], (int) numbers[1]));
+  }
+
+  if (returnMultiple){
+    fprintf(output ? output : stdout, "%d\n",
+          mcm((int) numbers[0], (int) numbers[1]));
+  }
+
   if (output) { fclose(output); }
   return SUCCESS;
 }
