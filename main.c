@@ -9,8 +9,8 @@
 #define SUCCESS 0
 #define ERROR 1
 #define VERSION 1.0
-#define MIN_INPUT 2
-#define MAX_INPUT 1073741823
+#define MIN_USER_INPUT 2
+#define MAX_USER_INPUT 1073741823
 
 extern int mcd(int, int);
 
@@ -39,7 +39,8 @@ void print_version() {
 }
 
 void print_out_of_range_error() {
-  fprintf(stderr, "The number is out of range (%d to %d)\n", MIN_INPUT, MAX_INPUT);
+  fprintf(stderr, "The number is out of range (%d to %d)\n", MIN_USER_INPUT,
+          MAX_USER_INPUT);
 }
 
 int main(int argc, char **argv) {
@@ -98,7 +99,8 @@ int main(int argc, char **argv) {
     numbers[i] = strtol(argv[argumentsRecievedByGetopt + 1 + i], &lastChar, 10);
     strtolError = errno == ERANGE &&
                   (numbers[i] == LONG_MIN || numbers[i] == LONG_MAX);
-    resultWillBeValid = numbers[i] >= MIN_INPUT && numbers[i] <= MAX_INPUT;
+    resultWillBeValid =
+        numbers[i] >= MIN_USER_INPUT && numbers[i] <= MAX_USER_INPUT;
     if (strtolError || (!resultWillBeValid)) {
       print_out_of_range_error();
       return ERROR;
