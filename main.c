@@ -43,9 +43,8 @@ void print_out_of_range_error() {
           MAX_USER_INPUT);
 }
 
-int main(int argc, char **argv) {
+int _main(int argc, char **argv, FILE** output, char** filename){
   int argument;
-  FILE *output = NULL;
   char *lastChar;
   bool returnMultiple = true;
   bool returnDivisor = true;
@@ -80,17 +79,27 @@ int main(int argc, char **argv) {
       case 'o':
         argumentsRecievedByGetopt += 2;
         if (strcmp(optarg, "-") != 0) {
-          output = fopen(optarg, "wb");
-          if (!output) {
+          *output = fopen(optarg, "wb");
+          if (!*output) {
             fprintf(stderr,
                     "The file '%s' could not be created/opened\n",
                     optarg);
             return ERROR;
           }
+          size_t filenameLength = strlen(optarg);
+          *filename = malloc(filenameLength + 1);
+          strncpy(*filename, optarg, filenameLength);
         }
+        break;
+      case '?':
+        return ERROR;
       default:
         break;
     }
+  }
+  if (argc < argumentsRecievedByGetopt + 3) {
+    fprintf(stderr, "Program arguments missing\n");
+    return ERROR;
   }
   long numbers[2];
   bool strtolError;
@@ -108,15 +117,26 @@ int main(int argc, char **argv) {
   }
 
   if (returnDivisor) {
-    fprintf(output ? output : stdout, "%d\n",
+    fprintf(*output ? *output : stdout, "%d\n",
             mcd((int) numbers[0], (int) numbers[1]));
   }
 
   if (returnMultiple) {
-    fprintf(output ? output : stdout, "%d\n",
+    fprintf(*output ? *output : stdout, "%d\n",
             mcm((int) numbers[0], (int) numbers[1]));
   }
 
-  if (output) { fclose(output); }
+  if (*output) { fclose(*output); }
   return SUCCESS;
+}
+
+int main(int argc, char **argv) {
+  FILE *output = NULL;
+  char* filename;
+  int returnValue = _main(argc, argv, &output, &filename);
+  if (returnValue != SUCCESS && output) {
+    remove(filename);
+  }
+  free(filename);
+  return returnValue;
 }
