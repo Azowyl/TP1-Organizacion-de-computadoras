@@ -43,7 +43,8 @@ void print_out_of_range_error() {
           MAX_USER_INPUT);
 }
 
-int _main(int argc, char **argv, FILE** output, char** filename){
+int _main(int argc, char **argv,
+          FILE** output, char** filename, bool* recievedFilename){
   int argument;
   char *lastChar;
   bool returnMultiple = true;
@@ -88,6 +89,7 @@ int _main(int argc, char **argv, FILE** output, char** filename){
           }
           size_t filenameLength = strlen(optarg);
           *filename = malloc(filenameLength + 1);
+          *recievedFilename = true;
           strncpy(*filename, optarg, filenameLength);
         }
         break;
@@ -133,10 +135,11 @@ int _main(int argc, char **argv, FILE** output, char** filename){
 int main(int argc, char **argv) {
   FILE *output = NULL;
   char* filename;
-  int returnValue = _main(argc, argv, &output, &filename);
+  bool recievedFilename = false;
+  int returnValue = _main(argc, argv, &output, &filename, &recievedFilename);
   if (returnValue != SUCCESS && output) {
     remove(filename);
   }
-  free(filename);
+  if (recievedFilename) { free(filename); }
   return returnValue;
 }
