@@ -1,18 +1,17 @@
 #include <mips/regdef.h>
 
-#define fp $30
-#define gp $28
-
 	.text
 	.globl mcm
 	.extern mcd
 	.ent mcm
 mcm:
+	.frame	$fp,32,ra
 	subu	sp,sp,32	# Saved Register Area
+	.cprestore 0
 	sw		ra,24(sp)
-	sw 		fp,20(sp)	# el regsitro 30 es fp
+	sw 		$fp,20(sp)	# el regsitro 30 es fp
 	sw 		gp,16(sp)	# el registro 28 es gp
-	move 	fp,sp
+	move 	$fp,sp
 
 	sw 		a0,32(sp)	# Argument Building Area	
 	sw		a1,36(sp)
@@ -27,7 +26,7 @@ mcm:
 	divu	v0,a0,v0			
 
 	lw 		ra,24(sp)	# fin
-	lw 		fp,20(sp)
+	lw 		$fp,20(sp)
 	addu 	sp,sp,32
 	j 		ra
 	.end mcm

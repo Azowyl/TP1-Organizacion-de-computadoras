@@ -1,17 +1,16 @@
 #include <mips/regdef.h>
 
-#define fp $30
-#define gp $28
-
 	.text
 	.globl mcd
 	.ent mcd
 mcd:
+	.frame	$fp,32,ra
 	subu	sp,sp,32	# Saved Register Area
+	.cprestore 0
 	sw		ra,24(sp)
-	sw 		fp,20(sp)	
+	sw 		$fp,20(sp)	
 	sw 		gp,16(sp)	
-	move 	fp,sp
+	move 	$fp,sp
 
 	sw 		a0,32(sp)		# Argument Building Area	
 	sw		a1,36(sp)
@@ -29,7 +28,7 @@ mcd:
 
 fin:
 	lw 		ra,24(sp)
-	lw 		fp,20(sp)
+	lw 		$fp,20(sp)
 	addu 	sp,sp,32
 	j 		ra
 	.end mcd
